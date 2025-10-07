@@ -1,0 +1,7 @@
+¿Qué es React?
+-Libreria: libreria de javascript, es un framework para frontend, esta integrada con muchas funciones de react, herramientas como las rutas, react router, los fetch, clientes http para comunicarse con backend utilizando axios, permite construir interfaces graficas de usuario
+-Declarativo, mezcla entre javascript y html, (jsx) trabaja con el dom, es sencillo para poder diseñar
+-eficiente, se encarga de renderizar un componente en particular, no toda la aplicacion, a medida que los datos cambian, renderiza esos datos o los componentes donde se encuentran esos datos
+-predecible: el estado, la info de la app, fluyen hacia una sola via
+-basado en componentes
+-aprende una vez y escribelo donde sea
