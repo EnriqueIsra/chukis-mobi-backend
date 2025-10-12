@@ -9,10 +9,11 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
     private String description;
     private Long price;
+    private String color;
+    private Long stock;
 
     public Long getId() {
         return id;
@@ -44,5 +45,21 @@ public class Product {
 
     public void setPrice(Long price) {
         this.price = price;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public Long getStock() {
+        return stock;
+    }
+
+    public void setStock(Long stock) {
+        this.stock = stock;
     }
 }
