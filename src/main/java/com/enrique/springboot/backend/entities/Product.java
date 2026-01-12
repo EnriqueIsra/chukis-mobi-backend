@@ -9,10 +9,20 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, name = "name")
     private String name;
+
+    @Column(nullable = false, name = "description")
     private String description;
+
+    @Column(nullable = false, name = "price")
     private Long price;
+
+    @Column(nullable = false, name = "color")
     private String color;
+
+    @Column(nullable = false, name = "stock")
     private Long stock;
 
     public Long getId() {
