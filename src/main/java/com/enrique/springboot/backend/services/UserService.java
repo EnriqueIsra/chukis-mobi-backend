@@ -12,5 +12,5 @@ public interface UserService {
 
     User save(User user);
     Optional<User> deleteById(Long id);
-    User login(String username, String password);
+    Optional<User> login(String username, String password);
 }

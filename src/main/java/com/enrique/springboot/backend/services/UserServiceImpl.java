@@ -19,6 +19,7 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository repository) {
         this.repository = repository;
     }
+
     // CRUD
     @Transactional(readOnly = true)
     @Override
@@ -42,7 +43,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public User save(User user) {
         // encriptamos contraseña solo al guardar
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        // user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.setPassword(user.getPassword());
         return repository.save(user);
     }
 
@@ -61,20 +63,20 @@ public class UserServiceImpl implements UserService {
     // LOGIN
     // -------------------
 
-    @Transactional(readOnly = true)
     @Override
-    public User login(String username, String password) {
+    public Optional<User> login(String username, String password) {
+        Optional<User> userOptional = repository.findByUsername(username);
 
-        Optional<User> optionalUser = repository.findByUsername(username);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
 
-        if (optionalUser.isEmpty()) return null;
-
-        User user = optionalUser.get();
-
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            return null;
+            // LOGIN SIMPLE (sin encriptar todavía)
+            if (user.getPassword().equals(password)) {
+                user.setPassword(null); // NUNCA regresar el password
+                return Optional.of(user);
+            }
         }
 
-        return user;
+        return Optional.empty();
     }
 }
