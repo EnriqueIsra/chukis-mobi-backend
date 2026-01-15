@@ -25,6 +25,9 @@ public class Product {
     @Column(nullable = false, name = "stock")
     private Long stock;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     public Long getId() {
         return id;
     }
@@ -71,5 +74,13 @@ public class Product {
 
     public void setStock(Long stock) {
         this.stock = stock;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

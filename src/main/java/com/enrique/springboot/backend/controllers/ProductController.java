@@ -49,6 +49,7 @@ public class ProductController {
             productDb.setPrice(product.getPrice());
             productDb.setColor(product.getColor());
             productDb.setStock(product.getStock());
+            productDb.setImageUrl(product.getImageUrl());
             return ResponseEntity.status(HttpStatus.CREATED).body(service.save(productDb));
         }
         return ResponseEntity.notFound().build();
