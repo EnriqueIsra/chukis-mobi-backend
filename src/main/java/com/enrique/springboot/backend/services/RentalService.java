@@ -21,4 +21,6 @@ public interface RentalService {
 
     Rental createRentalFromDto(CreateRentalRequest request);
 
+    Rental updateRentalFromDto(Long id, CreateRentalRequest request);
+
 }

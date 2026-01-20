@@ -27,4 +27,23 @@ public interface RentalItemRepository extends CrudRepository<RentalItem, Long> {
             @Param("endDate") LocalDate endDate,
             @Param("statuses") List<RentalStatus> statuses
     );
+
+    // Total de unidades rentadas excluyendo una renta específica (para edición)
+    @Query("""
+            SELECT COALESCE(SUM(ri.quantity), 0)
+            FROM RentalItem ri
+            JOIN ri.rental r
+            WHERE ri.product.id = :productId
+            AND r.status IN :statuses
+            AND r.startDate <= :endDate
+            AND r.endDate >= :startDate
+            AND r.id <> :excludeRentalId
+            """)
+    Long getRentedQuantityByProductAndDatesExcludingRental(
+            @Param("productId") Long productId,
+            @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate,
+            @Param("statuses") List<RentalStatus> statuses,
+            @Param("excludeRentalId") Long excludeRentalId
+    );
 }

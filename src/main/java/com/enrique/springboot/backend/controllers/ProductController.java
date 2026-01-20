@@ -1,11 +1,16 @@
 package com.enrique.springboot.backend.controllers;
 
+import com.enrique.springboot.backend.dto.ProductAvailabilityResponse;
 import com.enrique.springboot.backend.entities.Product;
+import com.enrique.springboot.backend.enums.RentalStatus;
+import com.enrique.springboot.backend.repositories.RentalItemRepository;
 import com.enrique.springboot.backend.services.ProductService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,14 +20,50 @@ import java.util.Optional;
 public class ProductController {
 
     private final ProductService service;
+    private final RentalItemRepository rentalItemRepository;
 
-    public ProductController(ProductService service) {
+    public ProductController(ProductService service, RentalItemRepository rentalItemRepository) {
         this.service = service;
+        this.rentalItemRepository = rentalItemRepository;
     }
 
     @GetMapping
     public ResponseEntity<List<Product>> list(){
         return ResponseEntity.ok(service.findAll());
+    }
+
+    // --------------------
+    // DISPONIBILIDAD POR FECHAS
+    // --------------------
+    @GetMapping("/availability")
+    public ResponseEntity<List<ProductAvailabilityResponse>> getAvailability(
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+
+        List<RentalStatus> activeStatuses = List.of(RentalStatus.CREATED, RentalStatus.DELIVERED);
+
+        List<ProductAvailabilityResponse> availability = service.findAll().stream()
+                .map(product -> {
+                    Long rentedQuantity = rentalItemRepository.getRentedQuantityByProductAndDates(
+                            product.getId(),
+                            startDate,
+                            endDate,
+                            activeStatuses
+                    );
+                    return new ProductAvailabilityResponse(
+                            product.getId(),
+                            product.getName(),
+                            product.getDescription(),
+                            product.getPrice(),
+                            product.getColor(),
+                            product.getStock(),
+                            rentedQuantity,
+                            product.getImageUrl()
+                    );
+                })
+                .toList();
+
+        return ResponseEntity.ok(availability);
     }
 
     @GetMapping("/{id}")

@@ -1,6 +1,7 @@
 package com.enrique.springboot.backend.services;
 
 import com.enrique.springboot.backend.dto.CreateRentalRequest;
+import com.enrique.springboot.backend.dto.RentalItemRequest;
 import com.enrique.springboot.backend.entities.Product;
 import com.enrique.springboot.backend.entities.Rental;
 import com.enrique.springboot.backend.entities.RentalItem;
@@ -141,6 +142,66 @@ public class RentalServiceImpl implements RentalService {
         return createRental(rental, request.getStartDate(), request.getEndDate());
     }
 
+
+    // ------------------------
+    // UPDATE RENTA FROM DTO
+    // ------------------------
+    @Override
+    @Transactional
+    public Rental updateRentalFromDto(Long id, CreateRentalRequest request) {
+        Rental existingRental = rentalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Renta no encontrada"));
+
+        // Eliminar items anteriores
+        existingRental.getItems().clear();
+
+        // Actualizar datos básicos
+        existingRental.setAddress(request.getAddress());
+        existingRental.setStartDate(request.getStartDate());
+        existingRental.setEndDate(request.getEndDate());
+        existingRental.setClient(
+                clientRepository.findById(request.getClientId())
+                        .orElseThrow(() -> new RuntimeException("Cliente no encontrado"))
+        );
+        existingRental.setUser(
+                userRepository.findById(request.getUserId())
+                        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"))
+        );
+
+        // Crear nuevos items y calcular total
+        long total = 0;
+        for (RentalItemRequest itemReq : request.getItems()) {
+            Product product = productRepository.findById(itemReq.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+            // Validar disponibilidad (excluyendo la renta actual)
+            Long rentedQuantity = rentalItemRepository.getRentedQuantityByProductAndDatesExcludingRental(
+                    product.getId(),
+                    request.getStartDate(),
+                    request.getEndDate(),
+                    List.of(RentalStatus.CREATED, RentalStatus.DELIVERED),
+                    id
+            );
+
+            long availableStock = product.getStock() - rentedQuantity;
+            if (itemReq.getQuantity() > availableStock) {
+                throw new RuntimeException("Stock insuficiente para el producto: " + product.getName());
+            }
+
+            RentalItem item = new RentalItem();
+            item.setProduct(product);
+            item.setQuantity(itemReq.getQuantity());
+            item.setPrice(product.getPrice());
+            item.setRental(existingRental);
+            existingRental.getItems().add(item);
+
+            total += item.getQuantity() * item.getPrice();
+        }
+
+        existingRental.setTotal(total);
+
+        return rentalRepository.save(existingRental);
+    }
 
     // ------------------------
     // DELETE
