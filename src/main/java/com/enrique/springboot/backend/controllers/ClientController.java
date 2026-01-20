@@ -2,6 +2,7 @@ package com.enrique.springboot.backend.controllers;
 
 import com.enrique.springboot.backend.entities.Client;
 import com.enrique.springboot.backend.services.ClientService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

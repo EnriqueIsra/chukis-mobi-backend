@@ -1,5 +1,6 @@
 package com.enrique.springboot.backend.entities;
 
+import com.enrique.springboot.backend.enums.Role;
 import jakarta.persistence.*;
 
 @Entity
@@ -15,7 +16,20 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false, name = "telefono", length = 10)
+    private String telefono;
+
+    @Column(name = "image_url")
     private String imageUrl;
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

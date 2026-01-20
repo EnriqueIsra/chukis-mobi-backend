@@ -60,10 +60,11 @@ public class UserController {
             User userDb = optionalUser.orElseThrow();
 
             userDb.setUsername(user.getUsername());
+            userDb.setTelefono(user.getTelefono());
             userDb.setRole(user.getRole());
             userDb.setImageUrl(user.getImageUrl());
 
-            // ⚠ solo actualizamos password si viene
+            // solo actualizamos password si viene
             if (user.getPassword() != null && !user.getPassword().isBlank()) {
                 userDb.setPassword(user.getPassword());
             }
