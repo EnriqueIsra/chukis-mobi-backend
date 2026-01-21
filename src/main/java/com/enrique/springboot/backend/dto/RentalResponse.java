@@ -1,13 +1,13 @@
 package com.enrique.springboot.backend.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class RentalResponse {
 
     private Long id;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
     private String status;
     private Long total;
     private String address;
@@ -16,7 +16,7 @@ public class RentalResponse {
     private List<RentalItemResponse> items;
 
     // Constructor completo
-    public RentalResponse(Long id, LocalDate startDate, LocalDate endDate, String status,
+    public RentalResponse(Long id, LocalDateTime startDate, LocalDateTime endDate, String status,
                           Long total, String address, ClientInfo client, UserInfo user, List<RentalItemResponse> items) {
         this.id = id;
         this.startDate = startDate;
@@ -33,11 +33,11 @@ public class RentalResponse {
         return id;
     }
 
-    public LocalDate getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public LocalDate getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 

@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,12 +33,12 @@ public class ProductController {
     }
 
     // --------------------
-    // DISPONIBILIDAD POR FECHAS
+    // DISPONIBILIDAD POR FECHAS Y HORAS
     // --------------------
     @GetMapping("/availability")
     public ResponseEntity<List<ProductAvailabilityResponse>> getAvailability(
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
 
         List<RentalStatus> activeStatuses = List.of(RentalStatus.CREATED, RentalStatus.DELIVERED);
 

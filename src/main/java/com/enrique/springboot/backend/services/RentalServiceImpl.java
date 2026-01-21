@@ -10,7 +10,7 @@ import com.enrique.springboot.backend.repositories.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -58,7 +58,7 @@ public class RentalServiceImpl implements RentalService {
 
     @Override
     @Transactional
-    public Rental createRental(Rental rental, LocalDate startDate, LocalDate endDate) {
+    public Rental createRental(Rental rental, LocalDateTime startDate, LocalDateTime endDate) {
         // No crear rentas sin productos
         if (rental.getItems() == null || rental.getItems().isEmpty()) {
             throw new IllegalArgumentException("La renta debe tener al menos un producto");

@@ -3,7 +3,7 @@ package com.enrique.springboot.backend.entities;
 import com.enrique.springboot.backend.enums.RentalStatus;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -14,13 +14,13 @@ public class Rental {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Fecha inicio de la renta
+    // Fecha y hora inicio de la renta
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
+    private LocalDateTime startDate;
 
-    // Fecha fin de la renta
+    // Fecha y hora fin de la renta
     @Column(name = "end_date", nullable = false)
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     // Dirección del evento (puede ser distinta a la del cliente)
     @Column(nullable = false)
@@ -57,20 +57,20 @@ public class Rental {
         this.id = id;
     }
 
-    public LocalDate getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDate start_date) {
-        this.startDate = start_date;
+    public void setStartDate(LocalDateTime startDate) {
+        this.startDate = startDate;
     }
 
-    public LocalDate getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate end_date) {
-        this.endDate = end_date;
+    public void setEndDate(LocalDateTime endDate) {
+        this.endDate = endDate;
     }
 
     public String getAddress() {
