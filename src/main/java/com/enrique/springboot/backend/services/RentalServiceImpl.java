@@ -212,5 +212,17 @@ public class RentalServiceImpl implements RentalService {
         optionalRental.ifPresent(rentalRepository::delete);
         return optionalRental;
     }
+    @Override
+    public Rental updateStatus(Long id, String status) {
+        Rental rental = rentalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Rental not found"));
 
+        try {
+            RentalStatus rentalStatus = RentalStatus.valueOf(status);
+            rental.setStatus(rentalStatus);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Invalid rental status: " + status);
+        }
+        return rentalRepository.save(rental);
+    }
 }

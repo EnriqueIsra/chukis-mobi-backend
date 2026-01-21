@@ -23,4 +23,6 @@ public interface RentalService {
 
     Rental updateRentalFromDto(Long id, CreateRentalRequest request);
 
+    Rental updateStatus(Long id, String status);
+
 }

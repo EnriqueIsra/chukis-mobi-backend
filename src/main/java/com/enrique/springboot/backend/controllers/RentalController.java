@@ -2,6 +2,7 @@ package com.enrique.springboot.backend.controllers;
 
 import com.enrique.springboot.backend.dto.CreateRentalRequest;
 import com.enrique.springboot.backend.dto.RentalResponse;
+import com.enrique.springboot.backend.dto.UpdateRentalStatusRequest;
 import com.enrique.springboot.backend.entities.Client;
 import com.enrique.springboot.backend.entities.Rental;
 import com.enrique.springboot.backend.entities.User;
@@ -121,4 +122,18 @@ public class RentalController {
                 items
         );
     }
+
+    @PutMapping("/{id}/status")
+    public ResponseEntity<RentalResponse> updateStatus(
+            @PathVariable Long id,
+            @RequestParam String status
+    ) {
+        try {
+            Rental rental = rentalService.updateStatus(id, status);
+            return ResponseEntity.ok(mapToResponse(rental));
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
