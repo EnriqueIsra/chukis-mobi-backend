@@ -60,6 +60,43 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
+	<!-- ==================================
+		Dependencias para seguridad y JWT
+	================================== -->
+
+		<!-- Spring Security: Framework de seguridad de Spring
+	 		Proporciona autenticación, autorización y protección contra ataques -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+		</dependency>
+
+		<!-- JJWT: Librería para crear y validar tokens JWT
+		 	Es la interfaz principal que usaremos -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-api</artifactId>
+			<version>0.12.6</version>
+		</dependency>
+
+		<!-- JJWT Impl: Implementación de la librería JWT
+		 	Contiene la lógica real de generación de tokens -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-impl</artifactId>
+			<version>0.12.6</version>
+			<scope>runtime</scope>
+		</dependency>
+
+		<!-- JJWT Jackson: Permite serializar/deserializar JWT a JSON
+		 	Necesario para convertir los claims del token -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt-jackson</artifactId>
+			<version>0.12.6</version>
+			<scope>runtime</scope>
+		</dependency>
+
 	</dependencies>
 
 	<build>
