@@ -4,7 +4,8 @@ import com.enrique.springboot.backend.entities.User;
 import com.enrique.springboot.backend.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+// Para inyectar el bean de BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,10 +15,13 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
 
-    private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+    // Inyectamos el PasswordEncoder del bean que se encuentra en SecurityConfig
+    private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository repository) {
+    // Constructor con inyección de dependencia
+    public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     // CRUD
@@ -42,9 +46,8 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User save(User user) {
-        // encriptamos contraseña solo al guardar
-        // user.setPassword(passwordEncoder.encode(user.getPassword()));
-        user.setPassword(user.getPassword());
+        // encriptamos contraseña antes de guardar
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repository.save(user);
     }
 
@@ -65,18 +68,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Optional<User> login(String username, String password) {
+
         Optional<User> userOptional = repository.findByUsername(username);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
 
-            // LOGIN SIMPLE (sin encriptar todavía)
-            if (user.getPassword().equals(password)) {
+            // Verificar contraseña usando BCrypt matches()
+            // Compara la contraseña en texto plano con el hash guardado
+            if (passwordEncoder.matches(password, user.getPassword())) {
                 user.setPassword(null); // NUNCA regresar el password
                 return Optional.of(user);
             }
         }
-
         return Optional.empty();
     }
 }

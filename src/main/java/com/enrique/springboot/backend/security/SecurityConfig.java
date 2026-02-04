@@ -11,6 +11,9 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+// Para el cifrado de constraseñas
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 // Para configurar CORS
 import org.springframework.web.cors.CorsConfiguration;
@@ -63,6 +66,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         // Rutas públicas (no requieren token)
                         .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/files/**").permitAll() // Permite que las imagenes puedan ser accesibles y por lo tanto que sean visibles
 
                         // Todas las demas rutas requieren autenticación
                         .anyRequest().authenticated()
@@ -98,5 +102,12 @@ public class SecurityConfig {
         source.registerCorsConfiguration("/**", configuration);
 
         return source;
+    }
+
+    /* Bean para encriptar contraseñas
+    * BCrypt es un algoritmo seguro que incluye salt automático */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
