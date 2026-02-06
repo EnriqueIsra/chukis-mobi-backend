@@ -49,6 +49,14 @@ public class Rental {
     @Column(nullable = false)
     private Long total;
 
+    /* Pagos/anticipos de la renta
+    * - mappedBy = "rental" -> El campo en Payment que tiene el @ManyToOne
+    * - cascade = ALL -> Si elimino la renta, se eliminan sus pagos
+    * - orphanRemoval = true -> Si quito un pago de la lista, se borra de la BD
+    */
+    @OneToMany(mappedBy = "rental", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments;
+
     public Long getId() {
         return id;
     }
@@ -119,5 +127,17 @@ public class Rental {
 
     public void setTotal(Long total) {
         this.total = total;
+    }
+
+    /* Obtiene la lista de pagos/anticipos de esta renta
+    * Permite ver el historial completo de pagos*/
+    public List<Payment> getPayments() {
+        return payments;
+    }
+
+    /* Establece la lista de pagos de esta renta
+    * Usado internamente por JPA para cargar la relación*/
+    public void setPayments(List<Payment> payments) {
+        this.payments = payments;
     }
 }
