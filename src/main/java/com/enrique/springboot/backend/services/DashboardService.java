@@ -1,6 +1,10 @@
 package com.enrique.springboot.backend.services;
 
+import com.enrique.springboot.backend.dto.DailyIncomeDTO;
 import com.enrique.springboot.backend.dto.DashboardStatsResponse;
+import com.enrique.springboot.backend.dto.RentalDetailDTO;
+
+import java.util.List;
 
 /**
  * Interface del servicio de Dashboard
@@ -17,4 +21,15 @@ public interface DashboardService {
      * @return DashboardStatsResponse con las métricas
      */
     DashboardStatsResponse getStats();
+
+    // Obtiene las rentas que se deben entregar en un día específico.
+    // El parámetro "daysFromToday" indica cuántos días a futuro:
+    // 0 = hoy, 1 = mañana
+    // Retorna una lista de RentalDetailDTO con resumen de productos y pagos.
+    List<RentalDetailDTO> getDeliveries(int daysFromToday);
+
+    // Obtiene los ingresos diarios del mes actual
+    // Retorna una lista de DailyIncomeDTO, uno por cada día del mes que tenga al menos una renta
+    // Cada elemento tiene: cobrado, anticipos y porCobrar.
+    List<DailyIncomeDTO> getMonthlyIncome();
 }

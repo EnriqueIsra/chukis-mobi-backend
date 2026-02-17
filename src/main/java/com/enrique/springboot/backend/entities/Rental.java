@@ -139,5 +139,5 @@ public class Rental {
     * Usado internamente por JPA para cargar la relación*/
     public void setPayments(List<Payment> payments) {
         this.payments = payments;
-    }
+    } 
 }
