@@ -87,4 +87,10 @@ public interface RentalRepository extends CrudRepository<Rental, Long> {
             @Param("statuses") List<RentalStatus> statuses
     );
 
+    // Buscar rentas por status
+    // Spring Data genera el query automáticamente a partir del nombre:
+    // find + By + Status -> SELECT * FROM rentals WHERE status = ?
+    // Se usa en el dashboard para obtener la lista de rentas CREATED
+    List<Rental> findByStatus(RentalStatus status);
+
 }

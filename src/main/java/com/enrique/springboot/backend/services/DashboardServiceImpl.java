@@ -183,6 +183,25 @@ public class DashboardServiceImpl implements DashboardService {
         return new ArrayList<>(dailyMap.values());
     }
 
+    // Obtener todas las rentas pendientes de entregar (status CREATED)
+    // No filtramos por fecha: traemos TODAS las CREATED sin importar cuándo son
+    // Reutilizamos convertToDTO() que ya tenemos para transformar cada Rental a DTO.
+    @Override
+    @Transactional(readOnly = true)
+    public List<RentalDetailDTO> getPendingRentals() {
+
+        // findByStatus: método que Spring Data genera automáticamente
+        // Busca todas las rentas cuyo status sea CREATED
+        List<Rental> rentals = rentalRepository.findByStatus((RentalStatus.CREATED));
+
+        // Convertimos cada Rental a RentalDetalDTO
+        // Reutilizamos el método privado convertToDTO() que ya armamos en getDeliveries()
+        // Este método extrae: cliente, teléfono, productos, total, pagado, pendiente.
+        return rentals.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     // Método privado: Convierte una entidad Rental a RentalDetailDTO
     // Extrae los datos del cliente, arma el resumen de productos y calcula los pagos (total pagado y pendiente)
     private RentalDetailDTO convertToDTO(Rental rental) {
@@ -252,7 +271,6 @@ public class DashboardServiceImpl implements DashboardService {
                 .mapToLong(Payment::getAmount)
                 .sum();
     }
-
 }
 
 /*

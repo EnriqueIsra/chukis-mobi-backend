@@ -71,6 +71,17 @@ public class DashboardController {
         List<DailyIncomeDTO> income = dashboardService.getMonthlyIncome();
         return ResponseEntity.ok(income);
     }
+
+    // GET /api/dashboard/pending-rentals
+    // Retorna la lista completa de rentas pendientes de entregar (status CREATED)
+    // Se usa en el dropdown expandible de la StatCard "Rentas por entregar"
+    // No recibe parámetros porque siempre busca todas las rentas con status CREATED
+    // Retorna List<RentalDetailDTO> con: id, clientName, clientPhone, address, startDate, endDate, status, productSummary, total, totalPaid, pending.
+    @GetMapping("/pending-rentals")
+    public ResponseEntity<List<RentalDetailDTO>> getPendingRentals() {
+        List<RentalDetailDTO> rentals = dashboardService.getPendingRentals();
+        return ResponseEntity.ok(rentals);
+    }
 }
 
 /*
