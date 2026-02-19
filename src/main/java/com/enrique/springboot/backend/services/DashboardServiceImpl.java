@@ -202,6 +202,23 @@ public class DashboardServiceImpl implements DashboardService {
                 .collect(Collectors.toList());
     }
 
+    // Obtiene las rentas que ya fueron entregadas y que ahora están pendientes de recoger (status DELIVERED)
+    // Mismo patrón que getPendingRentals pero filtrando por DELIVERED
+    @Override
+    @Transactional(readOnly = true)
+    public List<RentalDetailDTO> getDeliveredRentals() {
+        // findByStatus: método que Spring Data genera automáticamente
+        // Busca todas las rentas cuyo status sea DELIVERED
+        List<Rental> rentals = rentalRepository.findByStatus((RentalStatus.DELIVERED));
+
+        // Convertimos cada Rental a RentalDetalDTO
+        // Reutilizamos el método privado convertToDTO() que ya armamos en getDeliveries()
+        // Este método extrae: cliente, teléfono, productos, total, pagado, pendiente.
+        return rentals.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
     // Método privado: Convierte una entidad Rental a RentalDetailDTO
     // Extrae los datos del cliente, arma el resumen de productos y calcula los pagos (total pagado y pendiente)
     private RentalDetailDTO convertToDTO(Rental rental) {

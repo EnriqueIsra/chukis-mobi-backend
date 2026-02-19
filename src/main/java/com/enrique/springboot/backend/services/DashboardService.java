@@ -35,6 +35,11 @@ public interface DashboardService {
 
     // Obtener todas las rentas pendientes de entregar (status CREATED)
     // Retorna List<RentalDetailDTO> con info del cliente, productos, pagos
-    // Se usa en el dropdown expandible de la StatCard del dashboard.
+    // Se usa en el dropdown expandible de la StatCard de Rentas por Entregar del dashboard.
     List<RentalDetailDTO> getPendingRentals();
+
+    // Obtener todas las rentas pendientes de recoger (status DELIVERED)
+    // Retorna List<RentalDetailDTO> con info del cliente, productos, pagos
+    // Se usa en el dropdown expandible de la StatCard de Rentas por Recoger del dashboard.
+    List<RentalDetailDTO> getDeliveredRentals();
 }
