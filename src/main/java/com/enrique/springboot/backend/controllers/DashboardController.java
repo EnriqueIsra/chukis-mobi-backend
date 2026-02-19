@@ -79,8 +79,13 @@ public class DashboardController {
     // Retorna List<RentalDetailDTO> con: id, clientName, clientPhone, address, startDate, endDate, status, productSummary, total, totalPaid, pending.
     @GetMapping("/pending-rentals")
     public ResponseEntity<List<RentalDetailDTO>> getPendingRentals() {
-        List<RentalDetailDTO> rentals = dashboardService.getPendingRentals();
-        return ResponseEntity.ok(rentals);
+        return ResponseEntity.ok(dashboardService.getPendingRentals());
+    }
+
+    // Endpoint para obtener las rentas por recoger (status DELIVERED)
+    @GetMapping("/delivered-rentals")
+    public ResponseEntity<List<RentalDetailDTO>> getDeliveredRentals() {
+        return ResponseEntity.ok(dashboardService.getDeliveredRentals());
     }
 }
 
