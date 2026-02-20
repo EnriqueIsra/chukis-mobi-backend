@@ -52,8 +52,7 @@ public class DashboardController {
     //  ResponseEntity<List<RentalDetailDTO>>:
     //  - Retorna HTTp 200 con un JSON array de rentas
     //  - Cada renta incluye: cliente, productos, total, pagado, pendiente.
-    @GetMapping("/" +
-            "deliveries")
+    @GetMapping("/deliveries")
     public ResponseEntity<List<RentalDetailDTO>> getDeliveries(
             @RequestParam(defaultValue = "0") int days) {
         List<RentalDetailDTO> deliveries = dashboardService.getDeliveries(days);
