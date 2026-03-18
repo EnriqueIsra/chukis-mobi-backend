@@ -103,7 +103,12 @@ public class RentalServiceImpl implements RentalService {
             total += item.getQuantity() * item.getPrice();
         }
 
-        rental.setTotal(total);
+        // Respeta el total calculado personalizado si viene, si no usa el calculado
+        if (rental.getTotal() != null && rental.getTotal() > 0) {
+            // El total ya fue seteado desde el DTO con valor personalizado, no lo pisamos
+        } else {
+            rental.setTotal(total);
+        }
 
         // 4.- Guardar renta (cascade guarda items)
         return rentalRepository.save(rental);
@@ -138,6 +143,10 @@ public class RentalServiceImpl implements RentalService {
         }).toList();
 
         rental.setItems(items);
+
+        if (request.getTotal() != null && request.getTotal() > 0) {
+            rental.setTotal((request.getTotal())); // Pre-setea el total personalizado
+        }
 
         return createRental(rental, request.getStartDate(), request.getEndDate());
     }
@@ -198,8 +207,13 @@ public class RentalServiceImpl implements RentalService {
             total += item.getQuantity() * item.getPrice();
         }
 
-        existingRental.setTotal(total);
+        if (request.getTotal() != null && request.getTotal() > 0) {
+            existingRental.setTotal((request.getTotal())); // Usa el personalizado
+        } else {
+            existingRental.setTotal(total); // Usa el calculado
+        }
 
+        System.out.println("Total recibido del request: " + request.getTotal());
         return rentalRepository.save(existingRental);
     }
 

@@ -21,6 +21,8 @@ public class CreateRentalRequest {
     @NotBlank
     private String address;
 
+    private Long total; // opcional, si viene null el service calcula el total
+
     @NotEmpty
     private List<RentalItemRequest> items;
 
@@ -62,6 +64,14 @@ public class CreateRentalRequest {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public Long getTotal() {
+        return total;
+    }
+
+    public void setTotal(Long total) {
+        this.total = total;
     }
 
     public List<RentalItemRequest> getItems() {
