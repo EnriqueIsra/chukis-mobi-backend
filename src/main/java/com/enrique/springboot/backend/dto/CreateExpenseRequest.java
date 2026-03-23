@@ -29,6 +29,9 @@ public class CreateExpenseRequest {
     //Opcional - URL de la foto del ticket/comprobante
     private String imageUrl;
 
+    // Quién registra el gasto
+    private Long userId;
+
     // Getters y Setters
 
     public Long getAmount() {
@@ -70,4 +73,7 @@ public class CreateExpenseRequest {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
 }

@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ClientService {
-
+    List<Client> findAllActive();
+    List<Client> findAllInactive();
     List<Client> findAll();
-
     Optional<Client> findById(Long id);
-
     Client save(Client client);
-
-    Optional<Client> deleteById(Long id);
+    Client deactivate(Long id, String reason, Long desactivatedByUserId);
+    Client activate(Long id);
 }

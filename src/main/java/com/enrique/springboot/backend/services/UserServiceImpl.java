@@ -4,9 +4,9 @@ import com.enrique.springboot.backend.entities.User;
 import com.enrique.springboot.backend.repositories.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-// Para inyectar el bean de BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,17 +14,25 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository repository;
-
-    // Inyectamos el PasswordEncoder del bean que se encuentra en SecurityConfig
     private final PasswordEncoder passwordEncoder;
 
-    // Constructor con inyección de dependencia
     public UserServiceImpl(UserRepository repository, PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    // CRUD
+    @Transactional(readOnly = true)
+    @Override
+    public List<User> findAllActive() {
+        return repository.findByActiveTrueOrderByUsernameAsc();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public List<User> findAllInactive() {
+        return repository.findByActiveFalseOrderByUsernameAsc();
+    }
+
     @Transactional(readOnly = true)
     @Override
     public List<User> findAll() {
@@ -46,38 +54,48 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User save(User user) {
-        // encriptamos contraseña antes de guardar
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return repository.save(user);
     }
 
     @Transactional
     @Override
-    public Optional<User> deleteById(Long id) {
-        Optional<User> optionalUser = repository.findById(id);
-        if (optionalUser.isPresent()) {
-            repository.deleteById(id);
-            return optionalUser;
-        }
-        return Optional.empty();
+    public User deactivate(Long id, String reason, Long desactivatedByUserId) {
+        User user = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + id));
+
+        user.setActive(false);
+        user.setDesactivationReason(reason);
+        user.setDesactivationDate(LocalDateTime.now());
+
+        Optional<User> optionalAdmin = repository.findById(desactivatedByUserId);
+        optionalAdmin.ifPresent(user::setDesactivatedBy);
+
+        return repository.save(user);
     }
 
-    // -------------------
-    // LOGIN
-    // -------------------
+    @Transactional
+    @Override
+    public User activate(Long id) {
+        User user = repository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado: " + id));
+
+        user.setActive(true);
+        user.setDesactivationReason(null);
+        user.setDesactivationDate(null);
+        user.setDesactivatedBy(null);
+
+        return repository.save(user);
+    }
 
     @Override
     public Optional<User> login(String username, String password) {
-
         Optional<User> userOptional = repository.findByUsername(username);
 
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-
-            // Verificar contraseña usando BCrypt matches()
-            // Compara la contraseña en texto plano con el hash guardado
             if (passwordEncoder.matches(password, user.getPassword())) {
-                user.setPassword(null); // NUNCA regresar el password
+                user.setPassword(null);
                 return Optional.of(user);
             }
         }

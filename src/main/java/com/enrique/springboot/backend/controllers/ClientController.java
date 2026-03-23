@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -23,7 +24,12 @@ public class ClientController {
 
     @GetMapping
     public ResponseEntity<List<Client>> list() {
-        return ResponseEntity.ok(service.findAll());
+        return ResponseEntity.ok(service.findAllActive());
+    }
+
+    @GetMapping("/inactive")
+    public ResponseEntity<List<Client>> listInactive() {
+        return ResponseEntity.ok(service.findAllInactive());
     }
 
     @GetMapping("/{id}")
@@ -54,13 +60,16 @@ public class ClientController {
         return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Client> delete(@PathVariable Long id) {
-        Optional<Client> optionalClient = service.deleteById(id);
-        if (optionalClient.isPresent()) {
-            Client clientDeleted = optionalClient.orElseThrow();
-            return ResponseEntity.status(HttpStatus.OK).body(clientDeleted);
-        }
-        return ResponseEntity.notFound().build();
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<?> deactivate(@PathVariable Long id,
+                                        @RequestBody Map<String, Object> body) {
+        String reason = (String) body.get("reason");
+        Long userId = Long.valueOf(body.get("userId").toString());
+        return ResponseEntity.ok(service.deactivate(id, reason, userId));
+    }
+
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<?> activate(@PathVariable Long id) {
+        return ResponseEntity.ok(service.activate(id));
     }
 }

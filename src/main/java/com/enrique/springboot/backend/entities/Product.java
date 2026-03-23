@@ -1,6 +1,7 @@
 package com.enrique.springboot.backend.entities;
 
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "products")
@@ -27,6 +28,20 @@ public class Product {
 
     @Column(name = "image_url")
     private String imageUrl;
+
+    // Borrado lógico
+    @Column(nullable = false)
+    private Boolean active = true;
+
+    @Column(name = "desactivation_reason")
+    private String desactivationReason;
+
+    @ManyToOne
+    @JoinColumn(name = "desactivated_by")
+    private User desactivatedBy;
+
+    @Column(name = "desactivation_date")
+    private LocalDateTime desactivationDate;
 
     public Long getId() {
         return id;
@@ -83,4 +98,16 @@ public class Product {
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
     }
+
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
+
+    public String getDesactivationReason() { return desactivationReason; }
+    public void setDesactivationReason(String desactivationReason) { this.desactivationReason = desactivationReason; }
+
+    public User getDesactivatedBy() { return desactivatedBy; }
+    public void setDesactivatedBy(User desactivatedBy) { this.desactivatedBy = desactivatedBy; }
+
+    public LocalDateTime getDesactivationDate() { return desactivationDate; }
+    public void setDesactivationDate(LocalDateTime desactivationDate) { this.desactivationDate = desactivationDate; }
 }

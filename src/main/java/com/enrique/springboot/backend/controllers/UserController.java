@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -25,7 +26,12 @@ public class UserController {
     // -------------------
     @GetMapping
     public ResponseEntity<List<User>> list() {
-        return ResponseEntity.ok(service.findAll());
+        return ResponseEntity.ok(service.findAllActive());
+    }
+
+    @GetMapping("/inactive")
+    public ResponseEntity<List<User>> listInactive() {
+        return ResponseEntity.ok(service.findAllInactive());
     }
 
     // -------------------
@@ -78,16 +84,16 @@ public class UserController {
     // -------------------
     // ELIMINAR USUARIO
     // -------------------
-    @DeleteMapping("/{id}")
-    public ResponseEntity<User> delete(@PathVariable Long id) {
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<?> deactivate(@PathVariable Long id,
+                                        @RequestBody Map<String, Object> body) {
+        String reason = (String) body.get("reason");
+        Long userId = Long.valueOf(body.get("userId").toString());
+        return ResponseEntity.ok(service.deactivate(id, reason, userId));
+    }
 
-        Optional<User> optionalUser = service.deleteById(id);
-
-        if (optionalUser.isPresent()) {
-            User userDeleted = optionalUser.orElseThrow();
-            return ResponseEntity.ok(userDeleted);
-        }
-
-        return ResponseEntity.notFound().build();
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<?> activate(@PathVariable Long id) {
+        return ResponseEntity.ok(service.activate(id));
     }
 }

@@ -12,6 +12,7 @@ public interface WorkerPaymentService {
     List<WorkerPaymentResponse> findAllInactive();
     List<WorkerPaymentResponse> findByWorkerId(Long workerId);
     List<WorkerMonthlySummaryResponse> getMonthlySummaryByWorker(int year, int month);
+    List<WorkerMonthlySummaryResponse> getInactiveMonthlySummaryByWorker(int year, int month);
     Optional<WorkerPayment> findById(Long id);
     WorkerPayment save(WorkerPayment payment);
     WorkerPaymentResponse deactivate(Long id, String reason, Long desactivatedByUserId);

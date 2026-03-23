@@ -51,13 +51,22 @@ public class WorkerPaymentController {
         return ResponseEntity.ok(workerPaymentService.findByWorkerId(workerId));
     }
 
-    // Para el resumen mensual
+    // Para el resumen mensual (activos)
     @GetMapping("/monthly-summary")
     public ResponseEntity<List<WorkerMonthlySummaryResponse>> monthlySummary(
             @RequestParam int year,
             @RequestParam int month
     ) {
         return ResponseEntity.ok(workerPaymentService.getMonthlySummaryByWorker(year, month));
+    }
+
+    // Para el resumen mensual (inactivos)
+    @GetMapping("/monthly-summary/inactive")
+    public ResponseEntity<List<WorkerMonthlySummaryResponse>> monthlySummaryInactive(
+            @RequestParam int year,
+            @RequestParam int month
+    ) {
+        return ResponseEntity.ok(workerPaymentService.getInactiveMonthlySummaryByWorker(year, month));
     }
 
     // Registrar nuevo pago

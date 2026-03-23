@@ -1,7 +1,13 @@
 package com.enrique.springboot.backend.repositories;
 
 import com.enrique.springboot.backend.entities.Client;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ClientRepository extends CrudRepository<Client, Long> {
+import java.util.List;
+
+public interface ClientRepository extends JpaRepository<Client, Long> {
+
+    List<Client> findByActiveTrueOrderByNombreAsc();
+
+    List<Client> findByActiveFalseOrderByNombreAsc();
 }

@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -29,7 +30,12 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity<List<Product>> list(){
-        return ResponseEntity.ok(service.findAll());
+        return ResponseEntity.ok(service.findAllActive());
+    }
+
+    @GetMapping("/inactive")
+    public ResponseEntity<List<Product>> listInactive(){
+        return ResponseEntity.ok(service.findAllInactive());
     }
 
     // --------------------
@@ -96,13 +102,16 @@ public class ProductController {
         return ResponseEntity.notFound().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Product> delete (@PathVariable Long id){
-        Optional<Product> optionalProduct = service.deleteById(id);
-        if (optionalProduct.isPresent()){
-            Product productDeleted = optionalProduct.orElseThrow();
-            return ResponseEntity.status(HttpStatus.OK).body(productDeleted);
-        }
-        return ResponseEntity.notFound().build();
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<?> deactivate(@PathVariable Long id,
+                                        @RequestBody Map<String, Object> body) {
+        String reason = (String) body.get("reason");
+        Long userId = Long.valueOf(body.get("userId").toString());
+        return ResponseEntity.ok(service.deactivate(id, reason, userId));
+    }
+
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<?> activate(@PathVariable Long id) {
+        return ResponseEntity.ok(service.activate(id));
     }
 }

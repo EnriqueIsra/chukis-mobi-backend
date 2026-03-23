@@ -79,6 +79,11 @@ public class ExpenseController {
             expense.setExpenseDate(LocalDateTime.now());
         }
 
+        // Asignar el usuario que registra el gasto
+        if (request.getUserId() != null) {
+            userRepository.findById(request.getUserId()).ifPresent(expense::setUser);
+        }
+
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 toExpenseResponse(expenseService.save(expense))
         );

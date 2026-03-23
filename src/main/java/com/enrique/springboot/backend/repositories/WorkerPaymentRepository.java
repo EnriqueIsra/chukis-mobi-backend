@@ -24,6 +24,11 @@ public interface WorkerPaymentRepository extends JpaRepository<WorkerPayment, Lo
             LocalDateTime start, LocalDateTime end
     );
 
+    // Pagos inactivos en un rango de fechas (para la vista mensual)
+    List<WorkerPayment> findByActiveFalseAndPaymentDateBetweenOrderByPaymentDateDesc(
+            LocalDateTime start, LocalDateTime end
+    );
+
     // Pagos activos de un trabajador en un rango de fechas
     List<WorkerPayment> findByActiveTrueAndWorkerIdAndPaymentDateBetweenOrderByPaymentDateDesc(
             Long workerId, LocalDateTime start, LocalDateTime end
@@ -34,6 +39,16 @@ public interface WorkerPaymentRepository extends JpaRepository<WorkerPayment, Lo
         "WHERE p.active = true AND p.worker.id = :workerId " +
         "AND p.paymentDate >= :startDate AND p.paymentDate < :endDate")
     Long sumActivePaymentsByWorkerAndDateRange(
+            @Param("workerId") Long workerId,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+    // Suma total de pagos inactivos de un trabajador en un rango de fechas
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM WorkerPayment p " +
+        "WHERE p.active = false AND p.worker.id = :workerId " +
+        "AND p.paymentDate >= :startDate AND p.paymentDate < :endDate")
+    Long sumInactivePaymentsByWorkerAndDateRange(
             @Param("workerId") Long workerId,
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate

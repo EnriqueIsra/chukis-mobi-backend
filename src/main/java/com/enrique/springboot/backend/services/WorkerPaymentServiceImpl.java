@@ -82,6 +82,36 @@ public class WorkerPaymentServiceImpl implements WorkerPaymentService {
 
     @Override
     @Transactional(readOnly = true)
+    public List<WorkerMonthlySummaryResponse> getInactiveMonthlySummaryByWorker(int year, int month) {
+        LocalDateTime start = LocalDateTime.of(year, month, 1, 0, 0);
+        LocalDateTime end = start.plusMonths(1);
+
+        List<WorkerPayment> payments = workerPaymentRepository
+                .findByActiveFalseAndPaymentDateBetweenOrderByPaymentDateDesc(start, end);
+
+        return payments.stream()
+                .collect(Collectors.groupingBy(p -> p.getWorker().getId()))
+                .entrySet().stream()
+                .map(entry -> {
+                    Long workerId = entry.getKey();
+                    List<WorkerPayment> workerPayments = entry.getValue();
+                    User worker = workerPayments.get(0).getWorker();
+                    Long total = workerPaymentRepository.sumInactivePaymentsByWorkerAndDateRange(workerId, start, end);
+                    List<WorkerPaymentResponse> paymentResponses = workerPayments.stream()
+                            .map(this::toResponse).toList();
+                    return new WorkerMonthlySummaryResponse(
+                            worker.getId(),
+                            worker.getUsername(),
+                            worker.getImageUrl(),
+                            total,
+                            paymentResponses
+                    );
+                })
+                .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Optional<WorkerPayment> findById(Long id) {
         return workerPaymentRepository.findById(id);
     }
