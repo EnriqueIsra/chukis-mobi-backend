@@ -37,9 +37,18 @@ public class RentalServiceImpl implements RentalService {
         this.userRepository = userRepository;
     }
 
-    // ------------------------
-    // CRUD BÁSICO
-    // ------------------------
+    @Override
+    @Transactional(readOnly = true)
+    public List<Rental> findAllActive() {
+        return rentalRepository.findByActiveTrueOrderByStartDateDesc();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Rental> findAllInactive() {
+        return rentalRepository.findByActiveFalseOrderByStartDateDesc();
+    }
+
     @Override
     @Transactional(readOnly = true)
     public List<Rental> findAll() {
@@ -217,15 +226,36 @@ public class RentalServiceImpl implements RentalService {
         return rentalRepository.save(existingRental);
     }
 
-    // ------------------------
-    // DELETE
-    // ------------------------
     @Override
-    public Optional<Rental> deleteById(Long id) {
-        Optional<Rental> optionalRental = rentalRepository.findById(id);
-        optionalRental.ifPresent(rentalRepository::delete);
-        return optionalRental;
+    @Transactional
+    public Rental deactivate(Long id, String reason, Long desactivatedByUserId) {
+        Rental rental = rentalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Renta no encontrada: " + id));
+
+        rental.setActive(false);
+        rental.setDesactivationReason(reason);
+        rental.setDesactivationDate(LocalDateTime.now());
+
+        Optional<com.enrique.springboot.backend.entities.User> optionalUser = userRepository.findById(desactivatedByUserId);
+        optionalUser.ifPresent(rental::setDesactivatedBy);
+
+        return rentalRepository.save(rental);
     }
+
+    @Override
+    @Transactional
+    public Rental activate(Long id) {
+        Rental rental = rentalRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Renta no encontrada: " + id));
+
+        rental.setActive(true);
+        rental.setDesactivationReason(null);
+        rental.setDesactivationDate(null);
+        rental.setDesactivatedBy(null);
+
+        return rentalRepository.save(rental);
+    }
+
     @Override
     public Rental updateStatus(Long id, String status) {
         Rental rental = rentalRepository.findById(id)

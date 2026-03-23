@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -31,7 +32,14 @@ public class RentalController {
     // --------------------
     @GetMapping
     public List<RentalResponse> findAll() {
-        return rentalService.findAll().stream()
+        return rentalService.findAllActive().stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @GetMapping("/inactive")
+    public List<RentalResponse> findInactive() {
+        return rentalService.findAllInactive().stream()
                 .map(this::mapToResponse)
                 .toList();
     }
@@ -73,13 +81,17 @@ public class RentalController {
     // --------------------
     // ELIMINAR RENTA
     // --------------------
-    @DeleteMapping("/{id}")
-    public ResponseEntity<RentalResponse> delete(@PathVariable Long id) {
-        Optional<Rental> optionalRental = rentalService.deleteById(id);
-        if (optionalRental.isPresent()) {
-            return ResponseEntity.ok(mapToResponse(optionalRental.get()));
-        }
-        return ResponseEntity.notFound().build();
+    @PatchMapping("/{id}/deactivate")
+    public ResponseEntity<?> deactivate(@PathVariable Long id,
+                                        @RequestBody Map<String, Object> body) {
+        String reason = (String) body.get("reason");
+        Long userId = Long.valueOf(body.get("userId").toString());
+        return ResponseEntity.ok(mapToResponse(rentalService.deactivate(id, reason, userId)));
+    }
+
+    @PatchMapping("/{id}/activate")
+    public ResponseEntity<?> activate(@PathVariable Long id) {
+        return ResponseEntity.ok(mapToResponse(rentalService.activate(id)));
     }
 
     // --------------------
@@ -119,7 +131,11 @@ public class RentalController {
                 rental.getAddress(),
                 clientInfo,
                 userInfo,
-                items
+                items,
+                rental.getActive(),
+                rental.getDesactivationReason(),
+                rental.getDesactivatedBy() != null ? rental.getDesactivatedBy().getUsername() : null,
+                rental.getDesactivationDate()
         );
     }
 

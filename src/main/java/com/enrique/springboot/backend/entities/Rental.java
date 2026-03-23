@@ -57,6 +57,20 @@ public class Rental {
     @OneToMany(mappedBy = "rental", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments;
 
+    // Borrado lógico
+    @Column(nullable = false)
+    private Boolean active = true;
+
+    @Column(name = "desactivation_reason")
+    private String desactivationReason;
+
+    @ManyToOne
+    @JoinColumn(name = "desactivated_by")
+    private User desactivatedBy;
+
+    @Column(name = "desactivation_date")
+    private LocalDateTime desactivationDate;
+
     public Long getId() {
         return id;
     }
@@ -139,5 +153,17 @@ public class Rental {
     * Usado internamente por JPA para cargar la relación*/
     public void setPayments(List<Payment> payments) {
         this.payments = payments;
-    } 
+    }
+
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
+
+    public String getDesactivationReason() { return desactivationReason; }
+    public void setDesactivationReason(String desactivationReason) { this.desactivationReason = desactivationReason; }
+
+    public User getDesactivatedBy() { return desactivatedBy; }
+    public void setDesactivatedBy(User desactivatedBy) { this.desactivatedBy = desactivatedBy; }
+
+    public LocalDateTime getDesactivationDate() { return desactivationDate; }
+    public void setDesactivationDate(LocalDateTime desactivationDate) { this.desactivationDate = desactivationDate; }
 }

@@ -93,4 +93,7 @@ public interface RentalRepository extends CrudRepository<Rental, Long> {
     // Se usa en el dashboard para obtener la lista de rentas CREATED
     List<Rental> findByStatus(RentalStatus status);
 
+    List<Rental> findByActiveTrueOrderByStartDateDesc();
+
+    List<Rental> findByActiveFalseOrderByStartDateDesc();
 }

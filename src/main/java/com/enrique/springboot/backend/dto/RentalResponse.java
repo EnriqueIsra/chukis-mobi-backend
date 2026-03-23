@@ -14,10 +14,14 @@ public class RentalResponse {
     private ClientInfo client;
     private UserInfo user;
     private List<RentalItemResponse> items;
+    private Boolean active;
+    private String desactivationReason;
+    private String desactivatedByUsername;
+    private LocalDateTime desactivationDate;
 
-    // Constructor completo
     public RentalResponse(Long id, LocalDateTime startDate, LocalDateTime endDate, String status,
-                          Long total, String address, ClientInfo client, UserInfo user, List<RentalItemResponse> items) {
+                          Long total, String address, ClientInfo client, UserInfo user, List<RentalItemResponse> items,
+                          Boolean active, String desactivationReason, String desactivatedByUsername, LocalDateTime desactivationDate) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -27,6 +31,10 @@ public class RentalResponse {
         this.client = client;
         this.user = user;
         this.items = items;
+        this.active = active;
+        this.desactivationReason = desactivationReason;
+        this.desactivatedByUsername = desactivatedByUsername;
+        this.desactivationDate = desactivationDate;
     }
 
     public Long getId() {
@@ -64,6 +72,11 @@ public class RentalResponse {
     public List<RentalItemResponse> getItems() {
         return items;
     }
+
+    public Boolean getActive() { return active; }
+    public String getDesactivationReason() { return desactivationReason; }
+    public String getDesactivatedByUsername() { return desactivatedByUsername; }
+    public LocalDateTime getDesactivationDate() { return desactivationDate; }
 
     // DTO interno para cliente
     public static class ClientInfo {

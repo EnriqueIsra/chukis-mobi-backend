@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RentalService {
+    List<Rental> findAllActive();
+    List<Rental> findAllInactive();
     List<Rental> findAll();
 
     Optional<Rental> findById(Long id);
@@ -17,12 +19,13 @@ public interface RentalService {
             LocalDateTime endDate
     );
 
-    Optional<Rental> deleteById(Long id);
-
     Rental createRentalFromDto(CreateRentalRequest request);
 
     Rental updateRentalFromDto(Long id, CreateRentalRequest request);
 
     Rental updateStatus(Long id, String status);
 
+    Rental deactivate(Long id, String reason, Long desactivatedByUserId);
+
+    Rental activate(Long id);
 }
