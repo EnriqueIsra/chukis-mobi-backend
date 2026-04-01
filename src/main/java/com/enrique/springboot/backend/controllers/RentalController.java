@@ -37,6 +37,31 @@ public class RentalController {
                 .toList();
     }
 
+    @GetMapping("/with-subcontract")
+    public List<RentalResponse> findWithSubcontract() {
+        return rentalService.findWithSubcontract().stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @GetMapping("/with-contract")
+    public List<RentalResponse> findWithContract() {
+        return rentalService.findWithContract().stream()
+                .map(this::mapToResponse)
+                .toList();
+    }
+
+    @PatchMapping("/{id}/generate-contract")
+    @org.springframework.transaction.annotation.Transactional
+    public ResponseEntity<?> generateContract(@PathVariable Long id) {
+        Rental rental = rentalService.findById(id)
+                .orElseThrow(() -> new RuntimeException("Renta no encontrada"));
+        rental.setHasContract(true);
+        rental.setContractDate(java.time.LocalDateTime.now());
+        rentalService.save(rental);
+        return ResponseEntity.ok(mapToResponse(rental));
+    }
+
     @GetMapping("/inactive")
     public List<RentalResponse> findInactive() {
         return rentalService.findAllInactive().stream()
@@ -110,11 +135,14 @@ public class RentalController {
         User user = rental.getUser();
         RentalResponse.UserInfo userInfo = new RentalResponse.UserInfo(
                 user.getId(),
-                user.getUsername()
+                user.getUsername(),
+                user.getTelefono()
         );
 
         List<RentalResponse.RentalItemResponse> items = rental.getItems().stream()
                 .map(item -> new RentalResponse.RentalItemResponse(
+                        item.getId(),
+                        item.getSubcontractedQuantity(),
                         item.getProduct().getId(),
                         item.getProduct().getName(),
                         item.getQuantity(),
@@ -135,12 +163,15 @@ public class RentalController {
                 rental.getActive(),
                 rental.getDesactivationReason(),
                 rental.getDesactivatedBy() != null ? rental.getDesactivatedBy().getUsername() : null,
-                rental.getDesactivationDate()
+                rental.getDesactivationDate(),
+                rental.getHasSubcontract(),
+                rental.getHasContract(),
+                rental.getContractDate()
         );
     }
 
     @PutMapping("/{id}/status")
-    public ResponseEntity<RentalResponse> updateStatus(
+    public ResponseEntity<?> updateStatus(
             @PathVariable Long id,
             @RequestParam String status
     ) {
@@ -148,7 +179,7 @@ public class RentalController {
             Rental rental = rentalService.updateStatus(id, status);
             return ResponseEntity.ok(mapToResponse(rental));
         } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 

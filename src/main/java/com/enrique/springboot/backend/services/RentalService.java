@@ -11,8 +11,11 @@ public interface RentalService {
     List<Rental> findAllActive();
     List<Rental> findAllInactive();
     List<Rental> findAll();
+    List<Rental> findWithSubcontract();
+    List<Rental> findWithContract();
 
     Optional<Rental> findById(Long id);
+    Rental save(Rental rental);
     Rental createRental(
             Rental rental,
             LocalDateTime startDate,

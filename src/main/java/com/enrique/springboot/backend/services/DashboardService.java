@@ -33,6 +33,8 @@ public interface DashboardService {
     // Cada elemento tiene: cobrado, anticipos y porCobrar.
     List<DailyIncomeDTO> getMonthlyIncome();
 
+    List<DailyIncomeDTO> getMonthlyIncome(int year, int month);
+
     // Obtener todas las rentas pendientes de entregar (status CREATED)
     // Retorna List<RentalDetailDTO> con info del cliente, productos, pagos
     // Se usa en el dropdown expandible de la StatCard de Rentas por Entregar del dashboard.

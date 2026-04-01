@@ -3,13 +3,13 @@ package com.enrique.springboot.backend.repositories;
 import com.enrique.springboot.backend.entities.RentalItem;
 import com.enrique.springboot.backend.enums.RentalStatus;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface RentalItemRepository extends CrudRepository<RentalItem, Long> {
+public interface RentalItemRepository extends JpaRepository<RentalItem, Long> {
 
     // Total de unidades rentadas de un producto en un rango de fechas y horas
     @Query("""

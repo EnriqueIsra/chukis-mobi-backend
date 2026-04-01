@@ -18,10 +18,27 @@ public class RentalResponse {
     private String desactivationReason;
     private String desactivatedByUsername;
     private LocalDateTime desactivationDate;
+    private Boolean hasSubcontract;
+    private Boolean hasContract;
+    private LocalDateTime contractDate;
 
-    public RentalResponse(Long id, LocalDateTime startDate, LocalDateTime endDate, String status,
-                          Long total, String address, ClientInfo client, UserInfo user, List<RentalItemResponse> items,
-                          Boolean active, String desactivationReason, String desactivatedByUsername, LocalDateTime desactivationDate) {
+    public RentalResponse(
+            Long id,
+            LocalDateTime startDate,
+            LocalDateTime endDate,
+            String status,
+            Long total,
+            String address,
+            ClientInfo client,
+            UserInfo user,
+            List<RentalItemResponse> items,
+            Boolean active,
+            String desactivationReason,
+            String desactivatedByUsername,
+            LocalDateTime desactivationDate,
+            Boolean hasSubcontract,
+            Boolean hasContract,
+            LocalDateTime contractDate) {
         this.id = id;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -35,6 +52,9 @@ public class RentalResponse {
         this.desactivationReason = desactivationReason;
         this.desactivatedByUsername = desactivatedByUsername;
         this.desactivationDate = desactivationDate;
+        this.hasSubcontract = hasSubcontract;
+        this.hasContract = hasContract;
+        this.contractDate = contractDate;
     }
 
     public Long getId() {
@@ -78,6 +98,13 @@ public class RentalResponse {
     public String getDesactivatedByUsername() { return desactivatedByUsername; }
     public LocalDateTime getDesactivationDate() { return desactivationDate; }
 
+    public Boolean getHasSubcontract() {
+        return hasSubcontract;
+    }
+
+    public Boolean getHasContract() { return hasContract; }
+    public LocalDateTime getContractDate() { return contractDate; }
+
     // DTO interno para cliente
     public static class ClientInfo {
         private Long id;
@@ -105,30 +132,45 @@ public class RentalResponse {
     public static class UserInfo {
         private Long id;
         private String username;
+        private String phone;
 
-        public UserInfo(Long id, String username) {
+        public UserInfo(Long id, String username, String phone) {
             this.id = id;
             this.username = username;
+            this.phone = phone;
         }
 
         public Long getId() { return id; }
         public String getUsername() { return username; }
+        public String getPhone() { return phone; }
     }
 
     // DTO interno para items
     public static class RentalItemResponse {
+        private Long id;            // id del RentalItem (lo necesitamos para el módulo de subcontratados)
+        private Integer subcontractedQuantity;
         private Long productId;
         private String productName;
         private Integer quantity;
         private Long unitPrice;
         private Long subtotal;
 
-        public RentalItemResponse(Long productId, String productName, Integer quantity, Long unitPrice) {
+        public RentalItemResponse(Long id, Integer subcontractedQuantity, Long productId, String productName, Integer quantity, Long unitPrice) {
+            this.id = id;
+            this.subcontractedQuantity = subcontractedQuantity;
             this.productId = productId;
             this.productName = productName;
             this.quantity = quantity;
             this.unitPrice = unitPrice;
             this.subtotal = (long) quantity * unitPrice;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public Integer getSubcontractedQuantity() {
+            return subcontractedQuantity;
         }
 
         public Long getProductId() { return productId; }

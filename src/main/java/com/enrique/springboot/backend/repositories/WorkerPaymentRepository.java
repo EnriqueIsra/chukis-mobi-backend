@@ -53,6 +53,13 @@ public interface WorkerPaymentRepository extends JpaRepository<WorkerPayment, Lo
             @Param("startDate") LocalDateTime startDate,
             @Param("endDate") LocalDateTime endDate
     );
+
+    // Suma total de pagos activos a TODOS los trabajadores en un rango de fechas (para reportes)
+    @Query("SELECT COALESCE(SUM(p.amount), 0) FROM WorkerPayment p " +
+           "WHERE p.active = true AND p.paymentDate >= :startDate AND p.paymentDate < :endDate")
+    Long sumAllActivePaymentsByDateRange(
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate);
 }
 
 

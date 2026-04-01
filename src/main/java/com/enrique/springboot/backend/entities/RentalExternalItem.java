@@ -1,7 +1,6 @@
 package com.enrique.springboot.backend.entities;
 
 import jakarta.persistence.*;
-
 import java.time.LocalDateTime;
 
 @Entity
@@ -12,27 +11,25 @@ public class RentalExternalItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // A qué renta pertenece ese item externo
+    // A qué item de renta pertenece (producto + renta)
     @ManyToOne
-    @JoinColumn(name = "rental_id", nullable = false)
-    private Rental rental;
+    @JoinColumn(name = "rental_item_id", nullable = false)
+    private RentalItem rentalItem;
 
-    // Quién lo proveyó (la señora de Lecannet, etc.)
+    // Quién lo proveyó
     @ManyToOne
     @JoinColumn(name = "provider_id", nullable = false)
     private Provider provider;
 
-    // Descripción del producto externo (ej: "Mesas redondas")
-    @Column(nullable = false)
-    private String description;
-
+    // Cantidad asignada a este proveedor
     @Column(nullable = false)
     private Integer quantity;
 
+    // Costo por unidad que cobra el proveedor
     @Column(name = "unit_cost", nullable = false)
     private Long unitCost;
 
-    // Se guarda calculado: quantity * unitCost
+    // Calculado: quantity * unitCost
     @Column(name = "total_cost", nullable = false)
     private Long totalCost;
 
@@ -55,99 +52,36 @@ public class RentalExternalItem {
 
     public RentalExternalItem() {}
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public RentalItem getRentalItem() { return rentalItem; }
+    public void setRentalItem(RentalItem rentalItem) { this.rentalItem = rentalItem; }
 
-    public Rental getRental() {
-        return rental;
-    }
+    public Provider getProvider() { return provider; }
+    public void setProvider(Provider provider) { this.provider = provider; }
 
-    public void setRental(Rental rental) {
-        this.rental = rental;
-    }
+    public Integer getQuantity() { return quantity; }
+    public void setQuantity(Integer quantity) { this.quantity = quantity; }
 
-    public Provider getProvider() {
-        return provider;
-    }
+    public Long getUnitCost() { return unitCost; }
+    public void setUnitCost(Long unitCost) { this.unitCost = unitCost; }
 
-    public void setProvider(Provider provider) {
-        this.provider = provider;
-    }
+    public Long getTotalCost() { return totalCost; }
+    public void setTotalCost(Long totalCost) { this.totalCost = totalCost; }
 
-    public String getDescription() {
-        return description;
-    }
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
 
-    public Integer getQuantity() {
-        return quantity;
-    }
+    public String getDesactivationReason() { return desactivationReason; }
+    public void setDesactivationReason(String desactivationReason) { this.desactivationReason = desactivationReason; }
 
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
-    }
+    public User getDesactivatedBy() { return desactivatedBy; }
+    public void setDesactivatedBy(User desactivatedBy) { this.desactivatedBy = desactivatedBy; }
 
-    public Long getUnitCost() {
-        return unitCost;
-    }
-
-    public void setUnitCost(Long unitCost) {
-        this.unitCost = unitCost;
-    }
-
-    public Long getTotalCost() {
-        return totalCost;
-    }
-
-    public void setTotalCost(Long totalCost) {
-        this.totalCost = totalCost;
-    }
-
-    public String getNotes() {
-        return notes;
-    }
-
-    public void setNotes(String notes) {
-        this.notes = notes;
-    }
-
-    public Boolean getActive() {
-        return active;
-    }
-
-    public void setActive(Boolean active) {
-        this.active = active;
-    }
-
-    public String getDesactivationReason() {
-        return desactivationReason;
-    }
-
-    public void setDesactivationReason(String desactivationReason) {
-        this.desactivationReason = desactivationReason;
-    }
-
-    public User getDesactivatedBy() {
-        return desactivatedBy;
-    }
-
-    public void setDesactivatedBy(User desactivatedBy) {
-        this.desactivatedBy = desactivatedBy;
-    }
-
-    public LocalDateTime getDesactivationDate() {
-        return desactivationDate;
-    }
-
-    public void setDesactivationDate(LocalDateTime desactivationDate) {
-        this.desactivationDate = desactivationDate;
-    }
+    public LocalDateTime getDesactivationDate() { return desactivationDate; }
+    public void setDesactivationDate(LocalDateTime desactivationDate) { this.desactivationDate = desactivationDate; }
 }

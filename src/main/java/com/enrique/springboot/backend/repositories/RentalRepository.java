@@ -96,4 +96,10 @@ public interface RentalRepository extends CrudRepository<Rental, Long> {
     List<Rental> findByActiveTrueOrderByStartDateDesc();
 
     List<Rental> findByActiveFalseOrderByStartDateDesc();
+
+    // Rentas activas con subcontrato
+    List<Rental> findByActiveTrueAndHasSubcontractTrueOrderByStartDateDesc();
+
+    // Rentas activas con contrato generado
+    List<Rental> findByActiveTrueAndHasContractTrueOrderByContractDateDesc();
 }

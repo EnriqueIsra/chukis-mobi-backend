@@ -22,19 +22,22 @@ public class RentalServiceImpl implements RentalService {
     private final ProductRepository productRepository;
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
+    private final PaymentRepository paymentRepository;
 
     public RentalServiceImpl(
             RentalRepository rentalRepository,
             RentalItemRepository rentalItemRepository,
             ProductRepository productRepository,
             ClientRepository clientRepository,
-            UserRepository userRepository
+            UserRepository userRepository,
+            PaymentRepository paymentRepository
     ) {
         this.rentalRepository = rentalRepository;
         this.rentalItemRepository = rentalItemRepository;
         this.productRepository = productRepository;
         this.clientRepository = clientRepository;
         this.userRepository = userRepository;
+        this.paymentRepository = paymentRepository;
     }
 
     @Override
@@ -53,6 +56,24 @@ public class RentalServiceImpl implements RentalService {
     @Transactional(readOnly = true)
     public List<Rental> findAll() {
         return (List<Rental>) rentalRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Rental> findWithSubcontract() {
+        return rentalRepository.findByActiveTrueAndHasSubcontractTrueOrderByStartDateDesc();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Rental> findWithContract() {
+        return rentalRepository.findByActiveTrueAndHasContractTrueOrderByContractDateDesc();
+    }
+
+    @Override
+    @Transactional
+    public Rental save(Rental rental) {
+        return rentalRepository.save(rental);
     }
 
     @Override
@@ -99,6 +120,7 @@ public class RentalServiceImpl implements RentalService {
 
             long availableStock = product.getStock() - rentedQuantity;
 
+            // quantity = propias solamente, validar contra stock
             if (item.getQuantity() > availableStock) {
                 throw new RuntimeException(
                         "Stock insuficiente para el producto: " + product.getName()
@@ -109,7 +131,9 @@ public class RentalServiceImpl implements RentalService {
             item.setRental(rental);
             item.setPrice(product.getPrice());
 
-            total += item.getQuantity() * item.getPrice();
+            // Total cliente = (propias + subcontratadas) * precio
+            int subcontractedQty = item.getSubcontractedQuantity() != null ? item.getSubcontractedQuantity() : 0;
+            total += (item.getQuantity() + subcontractedQty) * item.getPrice();
         }
 
         // Respeta el total calculado personalizado si viene, si no usa el calculado
@@ -118,6 +142,11 @@ public class RentalServiceImpl implements RentalService {
         } else {
             rental.setTotal(total);
         }
+
+        // Si al menos un item tiene subcontractedQuantity > 0, marcar la renta
+        boolean hasSubcontract = rental.getItems().stream()
+                .anyMatch(i -> i.getSubcontractedQuantity() != null && i.getSubcontractedQuantity() > 0);
+        rental.setHasSubcontract(hasSubcontract);
 
         // 4.- Guardar renta (cascade guarda items)
         return rentalRepository.save(rental);
@@ -148,6 +177,7 @@ public class RentalServiceImpl implements RentalService {
 
             item.setProduct(product);
             item.setQuantity(itemReq.getQuantity());
+            item.setSubcontractedQuantity(itemReq.getSubcontractedQuantity() != null ? itemReq.getSubcontractedQuantity() : 0);
             return item;
         }).toList();
 
@@ -202,27 +232,37 @@ public class RentalServiceImpl implements RentalService {
             );
 
             long availableStock = product.getStock() - rentedQuantity;
+
+            // quantity = propias solamente
             if (itemReq.getQuantity() > availableStock) {
                 throw new RuntimeException("Stock insuficiente para el producto: " + product.getName());
             }
 
+            int subcontractedQty = itemReq.getSubcontractedQuantity() != null ? itemReq.getSubcontractedQuantity() : 0;
+
             RentalItem item = new RentalItem();
             item.setProduct(product);
             item.setQuantity(itemReq.getQuantity());
+            item.setSubcontractedQuantity(subcontractedQty);
             item.setPrice(product.getPrice());
             item.setRental(existingRental);
             existingRental.getItems().add(item);
 
-            total += item.getQuantity() * item.getPrice();
+            // Total cliente = (propias + subcontratadas) * precio
+            total += (item.getQuantity() + subcontractedQty) * item.getPrice();
         }
 
         if (request.getTotal() != null && request.getTotal() > 0) {
-            existingRental.setTotal((request.getTotal())); // Usa el personalizado
+            existingRental.setTotal(request.getTotal());
         } else {
-            existingRental.setTotal(total); // Usa el calculado
+            existingRental.setTotal(total);
         }
 
-        System.out.println("Total recibido del request: " + request.getTotal());
+        // Actualizar bandera de subcontrato
+        boolean hasSubcontract = existingRental.getItems().stream()
+                .anyMatch(i -> i.getSubcontractedQuantity() != null && i.getSubcontractedQuantity() > 0);
+        existingRental.setHasSubcontract(hasSubcontract);
+
         return rentalRepository.save(existingRental);
     }
 
@@ -263,6 +303,16 @@ public class RentalServiceImpl implements RentalService {
 
         try {
             RentalStatus rentalStatus = RentalStatus.valueOf(status);
+
+            // Validar que no se pueda marcar como RECOGIDA si falta pago
+            if (rentalStatus == RentalStatus.PICKED_UP) {
+                Long totalPaid = paymentRepository.sumAmountByRentalId(rental.getId());
+                long pending = rental.getTotal() - totalPaid;
+                if (pending > 0) {
+                    throw new RuntimeException("No se puede marcar como recogida. Falta por cobrar: $" + pending);
+                }
+            }
+
             rental.setStatus(rentalStatus);
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Invalid rental status: " + status);

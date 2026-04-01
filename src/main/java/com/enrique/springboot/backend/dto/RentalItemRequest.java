@@ -12,6 +12,9 @@ public class RentalItemRequest {
     @Min(1)
     private Integer quantity;
 
+
+    private Integer subcontractedQuantity;
+
     public Long getProductId() {
         return productId;
     }
@@ -27,4 +30,13 @@ public class RentalItemRequest {
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
+
+    public Integer getSubcontractedQuantity() {
+        return subcontractedQuantity;
+    }
+
+    public void setSubcontractedQuantity(Integer subcontractedQuantity) {
+        this.subcontractedQuantity = subcontractedQuantity;
+    }
+
 }

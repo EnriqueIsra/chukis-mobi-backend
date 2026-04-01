@@ -31,6 +31,10 @@ public class RentalItem {
     @Column(nullable = false)
     private Long price;
 
+    // Cantidad subcontratada (de un proveedor externo)
+    @Column(name = "subcontracted_quantity", nullable = false)
+    private Integer subcontractedQuantity = 0;
+
     public Long getId() {
         return id;
     }
@@ -70,4 +74,7 @@ public class RentalItem {
     public void setPrice(Long price) {
         this.price = price;
     }
+
+    public Integer getSubcontractedQuantity() { return subcontractedQuantity; }
+    public void setSubcontractedQuantity(Integer subcontractedQuantity) { this.subcontractedQuantity = subcontractedQuantity; }
 }

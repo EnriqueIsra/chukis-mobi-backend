@@ -2,7 +2,6 @@ package com.enrique.springboot.backend.services;
 
 import com.enrique.springboot.backend.dto.RentalExternalItemResponse;
 import com.enrique.springboot.backend.dto.RentalProfitabilityResponse;
-import com.enrique.springboot.backend.entities.Provider;
 import com.enrique.springboot.backend.entities.RentalExternalItem;
 import com.enrique.springboot.backend.entities.User;
 import com.enrique.springboot.backend.repositories.RentalExternalItemRepository;
@@ -48,7 +47,7 @@ public class RentalExternalItemServiceImpl implements RentalExternalItemService 
     @Override
     @Transactional(readOnly = true)
     public List<RentalExternalItemResponse> findByRentalId(Long rentalId) {
-        return itemRepository.findByActiveTrueAndRentalId(rentalId)
+        return itemRepository.findByActiveTrueAndRentalItemRentalId(rentalId)
                 .stream().map(this::toResponse).toList();
     }
 
@@ -83,6 +82,7 @@ public class RentalExternalItemServiceImpl implements RentalExternalItemService 
     }
 
     @Override
+    @Transactional
     public RentalExternalItemResponse deactivate(Long id, String reason, Long desactivatedByUserId) {
         RentalExternalItem item = itemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Item no encontrado: " + id));
@@ -98,6 +98,7 @@ public class RentalExternalItemServiceImpl implements RentalExternalItemService 
     }
 
     @Override
+    @Transactional
     public RentalExternalItemResponse activate(Long id) {
         RentalExternalItem item = itemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Item no encontrado: " + id));
@@ -109,14 +110,13 @@ public class RentalExternalItemServiceImpl implements RentalExternalItemService 
         return toResponse(itemRepository.save(item));
     }
 
-    // Convierte entidad a DTO de respuesta
     private RentalExternalItemResponse toResponse(RentalExternalItem item) {
         return new RentalExternalItemResponse(
                 item.getId(),
-                item.getRental().getId(),
+                item.getRentalItem().getId(),
+                item.getRentalItem().getProduct().getName(),
                 item.getProvider().getId(),
                 item.getProvider().getName(),
-                item.getDescription(),
                 item.getQuantity(),
                 item.getUnitCost(),
                 item.getTotalCost(),

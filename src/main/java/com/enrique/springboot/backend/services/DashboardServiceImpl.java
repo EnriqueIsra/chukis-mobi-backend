@@ -120,11 +120,18 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     @Transactional(readOnly = true)
     public List<DailyIncomeDTO> getMonthlyIncome() {
-
-        // Rango del mes actual
         YearMonth mesActual = YearMonth.now();
-        LocalDateTime inicioMes = mesActual.atDay(1).atStartOfDay();
-        LocalDateTime finMes = mesActual.plusMonths(1).atDay(1).atStartOfDay();
+        return getMonthlyIncome(mesActual.getYear(), mesActual.getMonthValue());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<DailyIncomeDTO> getMonthlyIncome(int year, int month) {
+
+        // Rango del mes solicitado
+        YearMonth mes = YearMonth.of(year, month);
+        LocalDateTime inicioMes = mes.atDay(1).atStartOfDay();
+        LocalDateTime finMes = mes.plusMonths(1).atDay(1).atStartOfDay();
 
         // Status activos (excluimos CANCELLED)
         List<RentalStatus> statusActivos = List.of(

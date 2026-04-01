@@ -67,8 +67,15 @@ public class DashboardController {
     // - Cada elemento tiene: date, cobrado, anticipos, porCobrar
     // - Solo incluye días que tengan al menos una renta.
     @GetMapping("/income/monthly")
-    public ResponseEntity<List<DailyIncomeDTO>> getMonthlyIncome() {
-        List<DailyIncomeDTO> income = dashboardService.getMonthlyIncome();
+    public ResponseEntity<List<DailyIncomeDTO>> getMonthlyIncome(
+            @RequestParam(required = false) Integer year,
+            @RequestParam(required = false) Integer month) {
+        List<DailyIncomeDTO> income;
+        if (year != null && month != null) {
+            income = dashboardService.getMonthlyIncome(year, month);
+        } else {
+            income = dashboardService.getMonthlyIncome();
+        }
         return ResponseEntity.ok(income);
     }
 

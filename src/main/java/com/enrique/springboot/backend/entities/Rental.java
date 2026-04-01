@@ -57,6 +57,17 @@ public class Rental {
     @OneToMany(mappedBy = "rental", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments;
 
+    // Bandera de subcontrato
+    @Column(name = "has_subcontract", nullable = false)
+    private Boolean hasSubcontract = false;
+
+    // Bandera de contrato generado
+    @Column(name = "has_contract", nullable = false)
+    private Boolean hasContract = false;
+
+    @Column(name = "contract_date")
+    private LocalDateTime contractDate;
+
     // Borrado lógico
     @Column(nullable = false)
     private Boolean active = true;
@@ -154,6 +165,15 @@ public class Rental {
     public void setPayments(List<Payment> payments) {
         this.payments = payments;
     }
+
+    public Boolean getHasSubcontract() { return hasSubcontract; }
+    public void setHasSubcontract(Boolean hasSubcontract) { this.hasSubcontract = hasSubcontract; }
+
+    public Boolean getHasContract() { return hasContract; }
+    public void setHasContract(Boolean hasContract) { this.hasContract = hasContract; }
+
+    public LocalDateTime getContractDate() { return contractDate; }
+    public void setContractDate(LocalDateTime contractDate) { this.contractDate = contractDate; }
 
     public Boolean getActive() { return active; }
     public void setActive(Boolean active) { this.active = active; }
