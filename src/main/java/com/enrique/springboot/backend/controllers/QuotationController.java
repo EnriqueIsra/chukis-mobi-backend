@@ -98,6 +98,35 @@ public class QuotationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(saved.getId());
     }
 
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody CreateQuotationRequest request) {
+        Quotation quotation = quotationRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Cotizacion no encontrada"));
+
+        quotation.getItems().clear();
+        quotation.setNotes(request.getNotes());
+
+        long total = 0;
+        for (CreateQuotationRequest.QuotationItemRequest itemReq : request.getItems()) {
+            Product product = productRepository.findById(itemReq.getProductId())
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado: " + itemReq.getProductId()));
+
+            QuotationItem item = new QuotationItem();
+            item.setQuotation(quotation);
+            item.setProduct(product);
+            item.setQuantity(itemReq.getQuantity());
+            item.setPrice(product.getPrice());
+            quotation.getItems().add(item);
+
+            total += (long) itemReq.getQuantity() * product.getPrice();
+        }
+
+        quotation.setTotal(request.getTotal() != null && request.getTotal() > 0 ? request.getTotal() : total);
+        quotationRepository.save(quotation);
+        return ResponseEntity.ok().build();
+    }
+
     @PatchMapping("/{id}/deactivate")
     @Transactional
     public ResponseEntity<?> deactivate(@PathVariable Long id, @RequestBody Map<String, Object> body) {

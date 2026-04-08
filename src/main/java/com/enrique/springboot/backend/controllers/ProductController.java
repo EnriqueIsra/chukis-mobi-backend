@@ -154,7 +154,7 @@ public class ProductController {
         if (imageUrl == null || imageUrl.isBlank()) {
             return ResponseEntity.badRequest().body("La URL de la imagen es obligatoria");
         }
-
+        
         // El displayOrder se asigna automáticamente al final de la galería
         Long count = productImageRepository.countByProductId(id);
 
