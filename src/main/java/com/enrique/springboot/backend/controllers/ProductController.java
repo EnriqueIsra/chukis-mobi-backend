@@ -52,18 +52,28 @@ public class ProductController {
     @GetMapping("/availability")
     public ResponseEntity<List<ProductAvailabilityResponse>> getAvailability(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate,
+            @RequestParam(required = false) Long excludeRentalId) {
 
         List<RentalStatus> activeStatuses = List.of(RentalStatus.CREATED, RentalStatus.DELIVERED);
 
-        List<ProductAvailabilityResponse> availability = productService.findAll().stream()
+        List<ProductAvailabilityResponse> availability = productService.findAllActive().stream()
                 .map(product -> {
-                    Long rentedQuantity = rentalItemRepository.getRentedQuantityByProductAndDates(
-                            product.getId(),
-                            startDate,
-                            endDate,
-                            activeStatuses
-                    );
+                    Long rentedQuantity = excludeRentalId != null
+                            ? rentalItemRepository.getRentedQuantityByProductAndDatesExcludingRental(
+                                    product.getId(),
+                                    startDate,
+                                    endDate,
+                                    activeStatuses,
+                                    excludeRentalId
+                            )
+                            : rentalItemRepository.getRentedQuantityByProductAndDates(
+                                    product.getId(),
+                                    startDate,
+                                    endDate,
+                                    activeStatuses
+                            );
+
                     return new ProductAvailabilityResponse(
                             product.getId(),
                             product.getName(),

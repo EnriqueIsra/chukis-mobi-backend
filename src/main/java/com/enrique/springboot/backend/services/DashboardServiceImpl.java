@@ -39,11 +39,11 @@ public class DashboardServiceImpl implements DashboardService {
     @Transactional(readOnly = true)     // Solo lectura, no modifica datos
     public DashboardStatsResponse getStats() {
 
-        // 1.- Contar rentas por entregar (status = CREATED)
-        Long rentasPorEntregar = rentalRepository.countByStatus(RentalStatus.CREATED);
+        // 1.- Contar rentas por entregar y solo activas (status = CREATED, active = true)
+        Long rentasPorEntregar = rentalRepository.countByStatusAndActiveTrue(RentalStatus.CREATED);
 
-        // 2.- Contar rentas por recoger (status = DELIVERED)
-        Long rentasPorRecoger = rentalRepository.countByStatus(RentalStatus.DELIVERED);
+        // 2.- Contar rentas por recoger y solo activas (status = DELIVERED, active = true)
+        Long rentasPorRecoger = rentalRepository.countByStatusAndActiveTrue(RentalStatus.DELIVERED);
 
         // 3.- Calcular ingresos del mes actual
         // Obtenemos el primer dia del mes actual a las 00:00:00
@@ -199,7 +199,7 @@ public class DashboardServiceImpl implements DashboardService {
 
         // findByStatus: método que Spring Data genera automáticamente
         // Busca todas las rentas cuyo status sea CREATED
-        List<Rental> rentals = rentalRepository.findByStatus((RentalStatus.CREATED));
+        List<Rental> rentals = rentalRepository.findByStatusAndActiveTrueOrderByStartDateAsc((RentalStatus.CREATED));
 
         // Convertimos cada Rental a RentalDetalDTO
         // Reutilizamos el método privado convertToDTO() que ya armamos en getDeliveries()
@@ -216,7 +216,7 @@ public class DashboardServiceImpl implements DashboardService {
     public List<RentalDetailDTO> getDeliveredRentals() {
         // findByStatus: método que Spring Data genera automáticamente
         // Busca todas las rentas cuyo status sea DELIVERED
-        List<Rental> rentals = rentalRepository.findByStatus((RentalStatus.DELIVERED));
+        List<Rental> rentals = rentalRepository.findByStatusAndActiveTrueOrderByStartDateAsc((RentalStatus.DELIVERED));
 
         // Convertimos cada Rental a RentalDetalDTO
         // Reutilizamos el método privado convertToDTO() que ya armamos en getDeliveries()

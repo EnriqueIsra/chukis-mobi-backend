@@ -18,6 +18,7 @@ public interface RentalItemRepository extends JpaRepository<RentalItem, Long> {
             JOIN ri.rental r
             WHERE ri.product.id = :productId
             AND r.status IN :statuses
+            AND r.active = true
             AND r.startDate <= :endDate
             AND r.endDate >= :startDate
             """)
@@ -35,6 +36,7 @@ public interface RentalItemRepository extends JpaRepository<RentalItem, Long> {
             JOIN ri.rental r
             WHERE ri.product.id = :productId
             AND r.status IN :statuses
+            AND r.active = true
             AND r.startDate <= :endDate
             AND r.endDate >= :startDate
             AND r.id <> :excludeRentalId

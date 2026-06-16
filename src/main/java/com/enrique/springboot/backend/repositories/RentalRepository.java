@@ -16,10 +16,16 @@ public interface RentalRepository extends CrudRepository<Rental, Long> {
     @Query("""
                 SELECT r FROM Rental r
                 WHERE r.status IN :statuses
+                AND r.active = true
                 AND r.startDate <= :endDate
                 AND r.endDate >= :startDate
             """)
     List<Rental> findActiveRentalsBetweenDates(@Param("startDate") LocalDate startDate, @Param("endDate") LocalDate endDate, @Param("statuses") List<RentalStatus> statuses);
+
+    // Métodos para filtrar rentas activas e inactivas
+    Long countByStatusAndActiveTrue(RentalStatus status);
+
+    List<Rental> findByStatusAndActiveTrueOrderByStartDateAsc(RentalStatus status);
 
     // Contar rentas por status
     Long countByStatus(RentalStatus status);
@@ -30,6 +36,7 @@ public interface RentalRepository extends CrudRepository<Rental, Long> {
             where r.startDate >= :startDate
             and r.startDate < :endDate
             and r.status IN :statuses
+            and r.active = true
             """)
     Long sumTotalByDateRangeAndStatuses(
             @Param("startDate") LocalDateTime startDate,
@@ -53,6 +60,7 @@ public interface RentalRepository extends CrudRepository<Rental, Long> {
         WHERE r.startDate >= :startDate
         AND r.startDate < :endDate
         AND r.status IN :statuses
+        AND r.active = true
         ORDER BY r.startDate ASC
         """)
     List<Rental> findByStartDateRangeAndStatuses(
@@ -79,6 +87,7 @@ public interface RentalRepository extends CrudRepository<Rental, Long> {
         WHERE r.startDate >= :startDate
         AND r.startDate < :endDate
         AND r.status IN :statuses
+        AND r.active = true
         ORDER BY r.startDate ASC
         """)
     List<Rental> findRentalsWithPaymentsByDateRange(
